@@ -2,6 +2,8 @@ from fastapi import APIRouter
 
 from uuid import uuid4
 
+from .shemas import UploadItem
+
 items_router = APIRouter(prefix="/items", tags=['Items'])
 
 

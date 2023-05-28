@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, Boolean, Date, Table
+from sqlalchemy import Column, String, Integer, ForeignKey, Date, Float
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship, declarative_base
 
@@ -12,8 +12,9 @@ class User(Base):
     __tablename__ = "user"
 
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
-    login = Column(String(128), nullable=False)
+    login = Column(String(128), nullable=False, unique=True)
     hashed_password = Column(String(128), nullable=False, index=True)
+    email = Column(String(128), nullable=False)
     role_id = Column(UUID(as_uuid=True), ForeignKey("role.id"))
     role = relationship("Role", back_populates="users")
 
@@ -22,15 +23,15 @@ class Product(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     name = Column(String(128), nullable=False)
-    Description = Column(String(128), nullable=True)
+    description = Column(String(128), nullable=True)
     category_id = Column(UUID(as_uuid=True), ForeignKey("category.id"))
     category = relationship("Category", back_populates="products")
-    price = Column(Boolean, nullable=True)
+    price = Column(Float, nullable=True)
     materials = relationship("Material", secondary="product_material", back_populates='products')
     size = Column(String(15), nullable=True)
     reviews = relationship("Review", secondary="product_review", back_populates='products')
     upload_data = Column(Date(), nullable=True)
-    photo = Column(String(128), nullable=True)
+    photo = relationship("Photo", secondary="product_photo", back_populates='products')
 
 class Review(Base):
     __tablename__ = "review"
@@ -39,7 +40,7 @@ class Review(Base):
     username = Column(String(128), nullable=False)
     review = Column(String(512), nullable=False)
     rating = Column(Integer, nullable=False)
-    products = relationship("Product", secondary="product_review", back_populates='reviews')
+    products = relationship("Product", secondary="product_review", back_populates='reviews') # Чуть не правильно
 
 class Category(Base):
     __tablename__ = "category"
@@ -62,6 +63,13 @@ class Role(Base):
     name = Column(String(128), nullable=False, unique=True)
     users = relationship("User", back_populates="role")
 
+class Photo(Base):
+    __tablename__ = "photo"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
+    name = Column(String(256), nullable=False, unique=True)
+    products = relationship("Product", secondary="product_photo", back_populates='photo')
+
 """
 Connections
 """
@@ -79,3 +87,10 @@ class ProductReview(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'))
     review_id = Column(UUID(as_uuid=True), ForeignKey('review.id'))
+
+class ProductPhoto(Base):
+    __tablename__ = "product_photo"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
+    product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'))
+    photo_id = Column(UUID(as_uuid=True), ForeignKey('photo.id'))

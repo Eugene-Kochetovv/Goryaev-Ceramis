@@ -2,7 +2,7 @@ from typing import Optional
 
 from fastapi import Form
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 from uuid import uuid4, UUID
 
@@ -18,16 +18,18 @@ class UserSchema(BaseModel):
 class RegisterUserForm(BaseModel):
 
     login: str
-    hashed_password: str
+    email: EmailStr
+    password: str
 
 
     @classmethod
     def as_form(
         cls,
         login: str = Form(...),
-        hashed_password: str = Form(...),
+        email: EmailStr = Form(...),
+        password: str = Form(...),
     ):
-        return cls(login=login, hashed_password=hashed_password)
+        return cls(login=login, email=email, password=password)
 
     class Config:
         orm_mode = True
