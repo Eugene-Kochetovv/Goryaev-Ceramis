@@ -18,3 +18,57 @@ class UpdateRole(BaseModel):
 
     class Config:
         orm_mode = True
+
+class NewRew(BaseModel):
+    text: str
+    rating: int
+    product_id: UUID
+    user_id: UUID
+
+    @classmethod
+    def as_form(
+        cls,
+        text: str = Form(...),
+        rating: int = Form(...),
+        product_id: UUID = Form(...),
+        user_id: UUID = Form(...)
+    ):
+        return cls(text=text, rating=rating, product_id=product_id, user_id=user_id)
+
+    class Config:
+        orm_mode = True
+
+
+class NewIt(BaseModel):
+    name: str
+    description: str
+    size: str
+
+    @classmethod
+    def as_form(
+        cls,
+        name: str = Form(...),
+        description: str = Form(...),
+        size: str = Form(...),
+    ):
+        return cls(name=name, description=description, size=size)
+
+    class Config:
+        orm_mode = True
+
+class NewRe(BaseModel):
+    text: str
+    rating: int
+    product_id: UUID
+
+    @classmethod
+    def as_form(
+        cls,
+        text: str = Form(...),
+        rating: int = Form(...),
+        product_id: UUID = Form(...)
+    ):
+        return cls(text=text, rating=rating, product_id=product_id)
+
+    class Config:
+        orm_mode = True

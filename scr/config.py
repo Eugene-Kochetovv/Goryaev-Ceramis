@@ -15,3 +15,6 @@ ACCESS_MIN = os.environ.get("ACCESS_MIN")
 
 SMTP_USER = os.environ.get("SMTP_USER")
 SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD")
+
+
+DEFAULTROLE = os.environ.get("DEFAULTROLE")
