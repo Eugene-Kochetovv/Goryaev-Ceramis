@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .service import create_material, select_all_materials, del_material
+from .service import create_material, select_all_materials, select_material_by_name, del_material
 from .shemas import Material
 
 from database.engine import get_async_session
@@ -32,6 +32,17 @@ async def materials(
     result = await select_all_materials(session)
     return result
 
+
+@material_router.get('/material/{name}', name='Show material by name')
+async def materials(
+    name,
+    session: AsyncSession = Depends(get_async_session)
+):
+    """
+        Вывод материала по имени
+    """
+    material = await select_material_by_name(name, session)
+    return material
 
 @material_router.delete('/materials', name='Delete material')
 async def delete_material(

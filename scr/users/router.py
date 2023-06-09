@@ -9,7 +9,7 @@ from database.models import User
 from .shemas import RegisterUserForm
 from auth.hasher import get_password_hash
 
-from .service import register_user, all_users, all
+from .service import register_user, all_users
 
 from auth.router import get_current_user
 
@@ -31,15 +31,4 @@ async def users(
     session: AsyncSession = Depends(get_async_session)
 ):
     result = await all_users(login, session)
-    return result
-
-
-@user_router.get('/userrrrrr/{login}', name='All users')
-async def usersrrr(
-    user: Annotated[User, Depends(get_current_user)],
-    login,
-    session: AsyncSession = Depends(get_async_session)
-):
-    print(user)
-    result = await all(login, session)
     return result

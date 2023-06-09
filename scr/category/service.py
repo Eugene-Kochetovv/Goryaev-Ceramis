@@ -30,6 +30,17 @@ async def select_all_categories(
         status_code=status.HTTP_200_OK,
         detail=r.scalars().all())
 
+async def select_categories_by_name(
+    name,
+    session
+):
+
+    stmt = select(Category).where(Category.name == name)
+    r = await session.execute(stmt)
+    return HTTPException(
+        status_code=status.HTTP_200_OK,
+        detail=r.scalars().all())
+
 
 async def del_category(
     name,

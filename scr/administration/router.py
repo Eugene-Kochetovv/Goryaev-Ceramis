@@ -1,35 +1,35 @@
-from fastapi import APIRouter, Depends, UploadFile, HTTPException, status
-from fastapi.responses import FileResponse
+# from fastapi import APIRouter, Depends, UploadFile, HTTPException, status
+# from fastapi.responses import FileResponse
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from sqlalchemy.orm import query, load_only, selectinload
-from sqlalchemy import delete, insert, update, and_, or_, join, outerjoin
+# from sqlalchemy.ext.asyncio import AsyncSession
+# from sqlalchemy.future import select
+# from sqlalchemy.orm import query, load_only, selectinload
+# from sqlalchemy import delete, insert, update, and_, or_, join, outerjoin
 
-import uuid
-import aiofiles
-import base64
+# import uuid
+# import aiofiles
+# import base64
 
-from database.engine import get_async_session
+# from database.engine import get_async_session
 
-from database.models import Role, User
-from database.models import Product, Review
-from .shemas import UpdateRole, NewRew
-from items.shemas import UploadItem
+# from database.models import Role, User
+# from database.models import Product, Review
+# from .shemas import UpdateRole, NewRew
+# from items.shemas import UploadItem
 
-administration = APIRouter(prefix="/admin", tags=['Administration'])
+# administration = APIRouter(prefix="/admin", tags=['Administration'])
 
 
 # Работа с ролями
-@administration.post('/new_role/{name}', name='New roles')
-async def new_roles(name: str, session: AsyncSession = Depends(get_async_session)):
-    """
-    Добавление роли.
-    """
-    stmt = insert(Role).values(name = name)
-    r = await session.execute(stmt)
-    await session.commit()
-    return HTTPException(status_code=200, detail="Роль добавлена.")
+# @administration.post('/new_role/{name}', name='New roles')
+# async def new_roles(name: str, session: AsyncSession = Depends(get_async_session)):
+#     """
+#     Добавление роли.
+#     """
+#     stmt = insert(Role).values(name = name)
+#     r = await session.execute(stmt)
+#     await session.commit()
+    # return HTTPException(status_code=200, detail="Роль добавлена.")
 
 # @administration.get('/roles', name='Select all roles')
 # async def roles(session: AsyncSession = Depends(get_async_session)):
@@ -49,22 +49,22 @@ async def new_roles(name: str, session: AsyncSession = Depends(get_async_session
 #     r = await session.execute(stmt)
 #     return HTTPException(status_code=202, detail="Роль успешно удалена.")
 
-@administration.patch('/update_role', name='Update role')
-async def roles(
-    update_form: UpdateRole = Depends(UpdateRole.as_form),
-    session: AsyncSession = Depends(get_async_session)
-    ):
-    """
-    Обновление роли у пользователя по их id.
-    """
-    stmt = update(User).where(User.id == update_form.user_id).values(role_id = update_form.role_id)
-    # try:
-    r = await session.execute(stmt)
-    await session.commit()
-    raise HTTPException(
-        status_code=200,
-        detail="Роль изменена.",
-        )
+# @administration.patch('/update_role', name='Update role')
+# async def roles(
+#     update_form: UpdateRole = Depends(UpdateRole.as_form),
+#     session: AsyncSession = Depends(get_async_session)
+#     ):
+#     """
+#     Обновление роли у пользователя по их id.
+#     """
+#     stmt = update(User).where(User.id == update_form.user_id).values(role_id = update_form.role_id)
+#     # try:
+#     r = await session.execute(stmt)
+#     await session.commit()
+#     raise HTTPException(
+#         status_code=200,
+#         detail="Роль изменена.",
+#         )
 
 
 # #Работа с пользователями

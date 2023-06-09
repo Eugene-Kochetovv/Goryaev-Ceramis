@@ -30,6 +30,17 @@ async def select_all_materials(
         status_code=status.HTTP_200_OK,
         detail=r.scalars().all())
 
+async def select_material_by_name(
+    name,
+    session
+):
+
+    stmt = select(Material).where(Material.name == name)
+    r = await session.execute(stmt)
+    return HTTPException(
+        status_code=status.HTTP_200_OK,
+        detail=r.scalars().all())
+
 
 async def del_material(
     name,
