@@ -17,5 +17,10 @@ async def new_user(
     name,
     session: AsyncSession = Depends(get_async_session)
 ):
+    """
+    Вывод картинки по её названию.
+    """
+    #Передача имени фото
     image = await get_photo(name, session)
+    #Возвращение результата функции
     return StreamingResponse(content=image, media_type="image/png")

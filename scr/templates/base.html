@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="{{ url_for('static', path='/js/home.js') }}"></script>
+    {% block head %}{% endblock %}
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <script>
+        function openForm() {
+            if (document.getElementById("categories").style.display = "none") {
+                document.getElementById("categories").style.display = "block";
+            }else {
+                document.getElementById("categories").style.display = "none";
+            }
+        }
+    </script>
+    {% block content %}
+    {% endblock %}
+</body>
+
+</html>

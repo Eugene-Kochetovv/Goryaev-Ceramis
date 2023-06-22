@@ -16,9 +16,7 @@ async def create_material(
     stmt = insert(Material).values(name = material_name)
     r = await session.execute(stmt)
     await session.commit()
-    return HTTPException(
-        status_code=status.HTTP_200_OK,
-        detail=material_name)
+    return material_name
 
 async def select_all_materials(
     session
@@ -26,9 +24,7 @@ async def select_all_materials(
 
     stmt = select(Material)
     r = await session.execute(stmt)
-    return HTTPException(
-        status_code=status.HTTP_200_OK,
-        detail=r.scalars().all())
+    return r.scalars().all()
 
 async def select_material_by_name(
     name,
@@ -37,9 +33,7 @@ async def select_material_by_name(
 
     stmt = select(Material).where(Material.name == name)
     r = await session.execute(stmt)
-    return HTTPException(
-        status_code=status.HTTP_200_OK,
-        detail=r.scalars().all())
+    return r.scalars().all()
 
 
 async def del_material(
@@ -50,6 +44,4 @@ async def del_material(
     stmt = delete(Material).where(Material.name == name)
     r = await session.execute(stmt)
     await session.commit()
-    return HTTPException(
-        status_code=status.HTTP_200_OK,
-        detail=f"Материал '{name}' удалена")
+    return name

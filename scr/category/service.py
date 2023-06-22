@@ -12,9 +12,13 @@ async def create_category(
     category_name,
     session
     ):
-
+    """
+    Запись категории в БД
+    """
     stmt = insert(Category).values(name = category_name)
+    # Запись запроса
     r = await session.execute(stmt)
+    # Подтверждение запроса
     await session.commit()
     return HTTPException(
         status_code=status.HTTP_200_OK,
@@ -23,18 +27,20 @@ async def create_category(
 async def select_all_categories(
     session
 ):
-
+    """
+    Вывод всех категорий.
+    """
     stmt = select(Category)
     r = await session.execute(stmt)
-    return HTTPException(
-        status_code=status.HTTP_200_OK,
-        detail=r.scalars().all())
+    return r.scalars().all()
 
 async def select_categories_by_name(
     name,
     session
 ):
-
+    """
+    Вывод категории по названию.
+    """
     stmt = select(Category).where(Category.name == name)
     r = await session.execute(stmt)
     return HTTPException(
@@ -46,7 +52,9 @@ async def del_category(
     name,
     session
 ):
-
+    """
+    Удаление категории
+    """
     stmt = delete(Category).where(Category.name == name)
     r = await session.execute(stmt)
     await session.commit()

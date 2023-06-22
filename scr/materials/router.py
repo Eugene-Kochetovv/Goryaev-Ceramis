@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,7 +30,9 @@ async def materials(
         Вывод всех материалов
     """
     result = await select_all_materials(session)
-    return result
+    return HTTPException(
+        status_code=status.HTTP_200_OK,
+        detail=result)
 
 
 @material_router.get('/material/{name}', name='Show material by name')
@@ -42,7 +44,9 @@ async def materials(
         Вывод материала по имени
     """
     material = await select_material_by_name(name, session)
-    return material
+    return HTTPException(
+        status_code=status.HTTP_200_OK,
+        detail=result)
 
 @material_router.delete('/materials', name='Delete material')
 async def delete_material(
@@ -53,4 +57,6 @@ async def delete_material(
         Удаление материала
     """
     result = await del_material(material.name, session)
-    return result
+    return HTTPException(
+        status_code=status.HTTP_200_OK,
+        detail=f"Материал '{material.name}' удален")

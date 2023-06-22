@@ -47,17 +47,6 @@ async def get_current_user(
     return user
 
 
-
-
-
-
-
-
-
-
-
-
-
 def create_access_token(data: dict, expires_delta: timedelta or None = None):
     to_encode = data.copy()
     if expires_delta:
