@@ -30,12 +30,13 @@ app.include_router(pages_router)
 
 
 
-# app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 origins = [
     "http://localhost",
     "http://localhost:8080",
+    "*",
 ]
 
 app.add_middleware(

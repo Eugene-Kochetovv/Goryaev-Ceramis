@@ -10,6 +10,7 @@ from sqlalchemy.exc import IntegrityError
 
 from uuid import uuid4
 import aiofiles
+import aiofiles.os
 
 from database.models import Product, Material, Photo, Category, ProductMaterial
 
@@ -75,7 +76,35 @@ async def all_products(session):
     return r.scalars().all()
 
 
-async def product(id, session):
+async def delete_product_by_id(id, session):
+    """
+    Удаление товара по id.
+    """
+    product = await search_product(id, session)
+    photos = product[0].photos
+
+    query = delete(Product).where(Product.id == id)
+    query_delete_photos = delete(Photo).where(Photo.product_id == id)
+    query_delete_material = delete(ProductMaterial).where(ProductMaterial.product_id == id)
+    try:
+        await delete_photos(photos)
+        await session.execute(query_delete_photos)
+        await session.execute(query_delete_material)
+        await session.execute(query)
+        await session.commit()
+        return True
+    except Exception as ex:
+        print(ex)
+        return False
+
+
+async def delete_photos(photos):
+    for photo in photos:
+        await aiofiles.os.remove(f'photos/{photo.name[28:]}')
+    return True
+
+
+async def search_product(id, session):
     """
     Вывод продукта по его id.
     """

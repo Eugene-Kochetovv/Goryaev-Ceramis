@@ -2,8 +2,8 @@
 
 {% block head %}
 <link href="{{ url_for('static', path='/css/home.css') }}" rel="stylesheet">
-<!-- <link rel="shortscut icon" href="{{ url_for('static', path='/icon.ico') }}" type="image/x-icon"> -->
-<script type="module" src="{{ url_for('static', path='/js/home.js') }}"></script>
+<link rel="shortscut icon" href="{{ url_for('static', path='/icon.ico') }}" type="image/x-icon">
+<script src="{{ url_for('static', path='/js/home.js') }}"></script>
 {% endblock %}
 
 {% block title %}
@@ -31,7 +31,7 @@ Home
     <div class="main-text">{{main_text}}</div>
     <div class="items">
         {% for product in products %}
-            <div class="item">
+            <div class="item" id="{{product.id}}">
                 <div class="image">
                     <img src="{{product.photos[0].name}}" alt="">
                 </div>
@@ -39,7 +39,7 @@ Home
                     <h3>{{product.name}}</h3>
                     <div class="price-more">
                         <span class="price">{{product.price}}<small>₽</small></span>
-                        <img src="../static/img/right-drawn-arrow.png" alt="">
+                        <a href="https://{{product.id}}"><img src="../static/img/right-drawn-arrow.png"></a>
                     </div>
                 </div>
             </div>

@@ -1,17 +1,15 @@
 from fastapi import Depends, HTTPException, status
 
-
 from sqlalchemy.future import select
 from sqlalchemy import delete, insert, join
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import load_only, selectinload
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, DBAPIError
 
 from database.models import User, Role
-
 from auth.hasher import get_password_hash
-
 from config import DEFAULTROLE
+
 
 async def register_user(
     user,

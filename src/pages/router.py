@@ -4,11 +4,11 @@ from fastapi.templating import Jinja2Templates
 from products.router import show_products, show_product_by_category
 from category.router import categories
 
-pages_router = APIRouter(tags=['Pages'])
+pages_router = APIRouter(prefix="/pages",tags=['Pages'])
 
 templates = Jinja2Templates(directory="templates")
 
-@pages_router.get("/home", name='home')
+@pages_router.get("", name='home')
 def get_base(request: Request, products = Depends(show_products), categories = Depends(categories)):
     return templates.TemplateResponse("home.html", {"request": request, "main_text": "Рекомендуем", "products": products, "categories": categories})
 
