@@ -12,7 +12,7 @@ from database.models import User, Role
 from database.engine import get_async_session
 from .shemas import IdPassUser, Token, TokenData, UserSchema
 from .hasher import veify_password
-
+from users.shemas import UserSchema
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 
@@ -22,6 +22,13 @@ from config import ACCESS_MIN, ALGORITHM, SECRET
 auth_router = APIRouter(prefix="/auth", tags=['Authorization'])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
+
+def access_check(user):
+    if user.login == "admin":
+        pass
+    else:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+
 
 async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
@@ -59,35 +66,25 @@ def create_access_token(data: dict, expires_delta: timedelta or None = None):
 
 async def get_user_by_login(login:str, session):
 
-    stmt = select(Role).join(User).where(User.login == login).filter(User.role_id == Role.id)
-    try:
-        r = await session.execute(stmt.options(load_only(Role.name)).options(selectinload(Role.users)))
-        u = r.fetchone()
-        user = {
-            "hashed_password": u[0].users[0].hashed_password,
-            "login": u[0].users[0].login,
-            "id": u[0].users[0].id,
-            "role": u[0].name
-        }
-        return user
-    except:
-        return False
+    stmt = select(User).where(User.login == login)
+    result = await session.execute(stmt)
+    return result.scalar()
+
+
 
 async def auth_user(login: str, password: str, session):
     user = await get_user_by_login(login, session)
-    if not user:
-        return False
-    if not veify_password(password, user.pop("hashed_password")):
-        return False
-
-    return user
+    if user:
+        if veify_password(password, user.hashed_password) is True:
+            return user
+    return None
 
 @auth_router.post("/token")
 async def login_for_access_token(from_data: OAuth2PasswordRequestForm = Depends(), session: AsyncSession = Depends(get_async_session)):
     user = await auth_user(from_data.username, from_data.password, session)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    if user:
+        access_token_expires = timedelta(minutes=int(ACCESS_MIN))
+        access_token = create_access_token(data={"sub": str(user.id), "login": user.login, "role_id": user.role_id}, expires_delta= access_token_expires)
+        return {"access_token": access_token, "token_type": "bearer"}
 
-    access_token_expires = timedelta(minutes=int(ACCESS_MIN))
-    access_token = create_access_token(data={"sub": str(user.pop("id")), "login": str(user.pop("login")), "role": user.pop("role")}, expires_delta= access_token_expires)
-    return {"access_token": access_token, "token_type": "bearer"}
+    return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)

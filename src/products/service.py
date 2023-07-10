@@ -3,9 +3,9 @@ from fastapi import Depends, HTTPException, status
 from datetime import datetime
 
 from sqlalchemy.future import select
-from sqlalchemy import delete, insert, join, and_
+from sqlalchemy import delete, insert, join, and_, desc, asc
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import load_only, selectinload, lazyload, joinedload, subqueryload
+from sqlalchemy.orm import load_only, selectinload
 from sqlalchemy.exc import IntegrityError
 
 from uuid import uuid4
@@ -35,45 +35,63 @@ async def upload_product(product, session):
         )
     # Запись запроса
     await session.execute(stmt)
+    try:
+        # Пробег по всем материалам в списке
+        for material in product.materials_id[0].split(","):
+            # Создание запроса
+            r = insert(ProductMaterial).values(product_id = product_id, material_id = int(material))
+            # Запись запроса
+            await session.execute(r)
+    except:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    # Пробег по всем материалам в списке
-    for material in product.materials_id[0].split(","):
-        # Создание запроса
-        r = insert(ProductMaterial).values(product_id = product_id, material_id = int(material))
-        # Запись запроса
-        await session.execute(r)
+    try:
         # Пробег по всем фото в списке
-    for photo in product.photos:
-        # Создание запроса
-        photo_stmt = insert(Photo).values(name=f"http://127.0.0.1:8000/photo/{photo.filename}", product_id=product_id)
-        # Открытие директории хранения фото
-        async with aiofiles.open(f'photos/{photo.filename}', 'wb') as out_file:
-            content = await photo.read()
-            # Сохранение фото
-            await out_file.write(content)
-        # Запись запроса
-        await session.execute(photo_stmt)
-
+        for photo in product.photos:
+            # Создание запроса
+            photo_stmt = insert(Photo).values(name=f"http://127.0.0.1:8000/photo/{photo.filename}", product_id=product_id)
+            # Открытие директории хранения фото
+            async with aiofiles.open(f'photos/{photo.filename}', 'wb') as out_file:
+                content = await photo.read()
+                # Сохранение фото
+                await out_file.write(content)
+            # Запись запроса
+            await session.execute(photo_stmt)
+    except:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     # Выполнение запросов в сессии
-    await session.commit()
+    try:
+        await session.commit()
+    except Exception as ex:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=ex)
     return 0
 
 
-async def all_products(session):
+async def all_products(session, params):
     """
     Вывод всех товаров, хранящихся в бд.
     """
     # Создание запроса
     stmt = select(Product).options(
-        load_only(Product.name, Product.price)
-        ).options(
-            selectinload(
-                Product.photos
-            )
+        selectinload(
+            Product.photos
         )
-    # Запись запроса и сохранение результата в переменную
-    r = await session.execute(stmt)
-    return r.scalars().all()
+    ).limit(
+        params.limit).offset(
+            (params.page - 1)*params.limit).filter(
+                Product.category_id == params.category_id)
+    # Выполнение запроса и сохранение результата в переменную
+    match params.sorted_by:
+        case "data":
+            products = await session.execute(stmt.order_by(Product.upload_data))
+        case "high_price":
+            products = await session.execute(stmt.order_by(Product.price.desc()))
+        case "low_price":
+            products = await session.execute(stmt.order_by(Product.price.asc()))
+        case _:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No such sort exists.")
+
+    return products.scalars().all()
 
 
 async def delete_product_by_id(id, session):
@@ -110,17 +128,6 @@ async def search_product(id, session):
     """
     # Создание запроса
     stmt = select(Product).where(Product.id == id).options(selectinload(Product.photos)).options(selectinload(Product.materials)).options(selectinload(Product.reviews))
-    # Запись запроса и сохранение результата в переменную
-    r = await session.execute(stmt)
-    return r.scalars().all()
-
-
-async def product_by_category(name, session):
-    """
-    Вывод продуктов из конкретной категории.
-    """
-    # Создание запроса
-    stmt = select(Category).where(Category.name == name).options(selectinload(Category.products).selectinload(Product.photos))
     # Запись запроса и сохранение результата в переменную
     r = await session.execute(stmt)
     return r.scalars().all()

@@ -9,7 +9,6 @@ from materials.router import material_router
 from auth.router import auth_router
 from api_photos.router import photo_router
 from reviews.router import reviews_router
-from pages.router import pages_router
 
 
 
@@ -25,12 +24,6 @@ app.include_router(category_router)
 app.include_router(material_router)
 app.include_router(photo_router)
 app.include_router(reviews_router)
-
-app.include_router(pages_router)
-
-
-
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 origins = [

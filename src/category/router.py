@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .service import create_category, select_all_categories, select_categories_by_name, del_category
 from .shemas import Category, Categories
+from auth.router import get_current_user, access_check
 
 from database.engine import get_async_session
 
@@ -14,12 +15,15 @@ category_router = APIRouter(prefix="/categories", tags=['Categories'])
 
 @category_router.post('', name='New category')
 async def new_category(
+    user = Depends(get_current_user),
     category_name: Category = Depends(Category),
     session: AsyncSession = Depends(get_async_session)
 ):
     """
         Добавление новой категории.
     """
+    access_check(user)
+
     result = await create_category(category_name.name, session)
     return result
 

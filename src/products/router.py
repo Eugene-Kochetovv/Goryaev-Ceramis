@@ -8,8 +8,8 @@ from uuid import UUID
 
 from database.engine import get_async_session
 
-from .shemas import ProductUpload, ProductsOut, ProductOut, ProductsOutByCategory
-from .service import upload_product, all_products, search_product, product_by_category, delete_product_by_id
+from .shemas import ProductUpload, ProductsOut, ProductOut, ProductsOutByCategory, ProductParams
+from .service import upload_product, all_products, search_product, delete_product_by_id
 
 product_router = APIRouter(prefix="/products", tags=['Products'])
 
@@ -25,9 +25,10 @@ async def new_product(
 
 @product_router.get('', name='Products', response_model=List[ProductsOut])
 async def show_products(
+    params = Depends(ProductParams),
     session: AsyncSession = Depends(get_async_session)
 ):
-    products = await all_products(session)
+    products = await all_products(session, params)
     return products
 
 @product_router.delete('', name='Products')
@@ -45,13 +46,4 @@ async def show_product(
     session: AsyncSession = Depends(get_async_session)
 ):
     products = await search_product(product_id, session)
-    return products
-
-
-@product_router.get('/category/', name='ProductByCategory', response_model=List[ProductsOutByCategory])
-async def show_product_by_category(
-    category: str,
-    session: AsyncSession = Depends(get_async_session)
-):
-    products = await product_by_category(category, session)
     return products

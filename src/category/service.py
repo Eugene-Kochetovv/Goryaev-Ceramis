@@ -5,13 +5,9 @@ from sqlalchemy.future import select
 from sqlalchemy import delete, insert
 
 from database.models import Category
-
 from database.engine import get_async_session
 
-async def create_category(
-    category_name,
-    session
-    ):
+async def create_category(category_name, session):
     """
     Запись категории в БД
     """

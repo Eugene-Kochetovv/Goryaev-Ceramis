@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import Form, UploadFile, File
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from uuid import UUID
 
@@ -52,13 +52,20 @@ class ReviewsOut(BaseModel):
     class Config:
         orm_mode = True
 
+class Category(BaseModel):
+    name: str
+
 class ProductsOut(BaseModel):
     id: UUID
     name: str
     price: float
+    category_id: int
     photos: List[PhotoOut]
     class Config:
         orm_mode = True
+
+
+
 
 class ProductsOutByCategory(BaseModel):
     name: str
@@ -80,3 +87,11 @@ class ProductOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class ProductParams(BaseModel):
+
+    limit: int = Field(1, le=20)
+    page: int = Field(1)
+    category_id: int
+    sorted_by: str = Field("data")
