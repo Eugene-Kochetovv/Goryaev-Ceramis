@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  backend:
+    container_name: fast-api-backend
+    build:
+      context: .
+    # env_file:
+    #   - fastapi_backend/.env-prod
+    command: ["/backend/docker/backend.sh"]
+    ports:
+      - 8400:8000

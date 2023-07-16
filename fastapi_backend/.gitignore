@@ -4,6 +4,7 @@
 # Ada Library Information
 *.ali
 .env
+.env-prod
 env
 
 photos
