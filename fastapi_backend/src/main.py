@@ -1,6 +1,5 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
 from products.router import product_router
 from users.router import user_router
@@ -11,9 +10,7 @@ from api_photos.router import photo_router
 from reviews.router import reviews_router
 
 
-
 app = FastAPI()
-
 
 app.include_router(auth_router)
 app.include_router(user_router)

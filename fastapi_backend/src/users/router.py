@@ -9,7 +9,7 @@ from auth.hasher import get_password_hash
 from .service import register_user, user_by_login, user_active
 from auth.router import get_current_user, access_check
 
-user_router = APIRouter(prefix="/user", tags=['Users'])
+user_router = APIRouter(prefix="/api/user", tags=['Users'])
 
 
 

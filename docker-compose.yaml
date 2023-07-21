@@ -9,4 +9,4 @@ services:
     #   - fastapi_backend/.env-prod
     command: ["/backend/docker/backend.sh"]
     ports:
-      - 8400:8000
+      - 80:8000

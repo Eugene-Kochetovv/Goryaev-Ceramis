@@ -1,5 +1,3 @@
-from typing import Annotated
-
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 
@@ -10,7 +8,8 @@ from database.engine import get_async_session
 from .service import get_photo
 
 
-photo_router = APIRouter(prefix="/photo", tags=['Photo'])
+photo_router = APIRouter(prefix="/api/photo", tags=['Photo'])
+
 
 @photo_router.get('/{name}', name='Get photo')
 async def new_user(
@@ -20,7 +19,7 @@ async def new_user(
     """
     Вывод картинки по её названию.
     """
-    #Передача имени фото
+    # Передача имени фото
     image = await get_photo(name, session)
-    #Возвращение результата функции
+    # Возвращение результата функции
     return StreamingResponse(content=image, media_type="image/png")

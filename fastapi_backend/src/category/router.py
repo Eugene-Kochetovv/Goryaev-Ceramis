@@ -10,12 +10,12 @@ from auth.router import get_current_user, access_check
 
 from database.engine import get_async_session
 
-category_router = APIRouter(prefix="/categories", tags=['Categories'])
+category_router = APIRouter(prefix="/api/categories", tags=['Categories'])
 
 
 @category_router.post('', name='New category')
 async def new_category(
-    user = Depends(get_current_user),
+    user=Depends(get_current_user),
     category_name: Category = Depends(Category),
     session: AsyncSession = Depends(get_async_session)
 ):
@@ -38,6 +38,7 @@ async def categories(
     result = await select_all_categories(session)
     return result
 
+
 @category_router.get('/{name}', name='Show category by name')
 async def show_category(
     name,
@@ -52,7 +53,7 @@ async def show_category(
 
 @category_router.delete('', name='Delete category')
 async def delete_category(
-    user = Depends(get_current_user),
+    user=Depends(get_current_user),
     category_name: Category = Depends(Category),
     session: AsyncSession = Depends(get_async_session)
 ):

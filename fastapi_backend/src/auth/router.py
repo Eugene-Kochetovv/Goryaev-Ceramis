@@ -19,9 +19,10 @@ from jose import JWTError, jwt
 from config import ACCESS_MIN, ALGORITHM, SECRET
 
 
-auth_router = APIRouter(prefix="/auth", tags=['Authorization'])
+auth_router = APIRouter(prefix="/api/auth", tags=['Authorization'])
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
+
 
 def access_check(user):
     if user.login == "admin":
@@ -72,13 +73,13 @@ async def get_user_by_login(login:str, session):
     return result.scalar()
 
 
-
 async def auth_user(login: str, password: str, session):
     user = await get_user_by_login(login, session)
     if user:
         if veify_password(password, user.hashed_password) is True:
             return user
     return None
+
 
 @auth_router.post("/token")
 async def login_for_access_token(from_data: OAuth2PasswordRequestForm = Depends(), session: AsyncSession = Depends(get_async_session)):

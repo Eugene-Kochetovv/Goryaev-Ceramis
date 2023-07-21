@@ -10,7 +10,7 @@ from database.engine import get_async_session
 from auth.router import get_current_user, access_check
 
 
-material_router = APIRouter(prefix="/materials", tags=['Materials'])
+material_router = APIRouter(prefix="/api/materials", tags=['Materials'])
 
 
 @material_router.post('', name='New material')

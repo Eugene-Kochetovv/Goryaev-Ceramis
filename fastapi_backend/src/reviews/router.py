@@ -11,7 +11,7 @@ from auth.router import get_current_user, access_check
 from .service import create_new_review, get_review_by_text, delete_review
 from .shemas import Review
 
-reviews_router = APIRouter(prefix="/reviews", tags=['Reviews'])
+reviews_router = APIRouter(prefix="/api/reviews", tags=['Reviews'])
 
 
 @reviews_router.post('', name='Create review by product id')
