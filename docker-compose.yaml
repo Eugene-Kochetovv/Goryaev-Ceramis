@@ -4,9 +4,11 @@ services:
   backend:
     container_name: fast-api-backend
     build:
-      context: .
-    # env_file:
-    #   - fastapi_backend/.env-prod
+      context: /fastapi_backend
+    env_file:
+      - fastapi_backend/.env-prod
     command: ["/backend/docker/backend.sh"]
+    volumes:
+      - /home/site/photo:/photos
     ports:
-      - 80:8000
+      - 6748:8000

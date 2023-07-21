@@ -10,7 +10,7 @@ import aiofiles
 import aiofiles.os
 
 from database.models import Product, Photo, ProductMaterial
-from config import FILEPATCH
+from config import FILEPATCH, DATAPATCH
 
 
 async def upload_product(product, session):
@@ -53,7 +53,7 @@ async def upload_product(product, session):
                 product_id=product_id
             )
             # Открытие директории хранения фото
-            async with aiofiles.open(f'photos/{photo.filename}', 'wb') as out_file:
+            async with aiofiles.open(f'{DATAPATCH}{photo.filename}', 'wb') as out_file:
                 content = await photo.read()
                 # Сохранение фото
                 await out_file.write(content)
@@ -105,8 +105,12 @@ async def delete_product_by_id(id, session):
     Удаление товара по id.
     """
     product = await search_product(id, session)
+    if product == []:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Нет товара с таким id!"
+        )
     photos = product[0].photos
-
     query = delete(Product).where(Product.id == id)
     query_delete_photos = delete(Photo).where(Photo.product_id == id)
     query_delete_material = delete(ProductMaterial).where(
@@ -131,7 +135,7 @@ async def delete_product_by_id(id, session):
 
 async def delete_photos(photos):
     for photo in photos:
-        await aiofiles.os.remove(f'photos/{photo.name[len(FILEPATCH):]}')
+        await aiofiles.os.remove(f'{DATAPATCH}{photo.name[len(FILEPATCH):]}')
     return True
 
 

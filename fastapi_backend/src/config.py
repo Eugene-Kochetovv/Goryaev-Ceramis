@@ -23,3 +23,4 @@ SMTP_USER = os.environ.get("SMTP_USER")
 SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD")
 
 FILEPATCH = os.environ.get("FILEPATCH")
+DATAPATCH = os.environ.get("DATAPATCH")

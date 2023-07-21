@@ -4,7 +4,6 @@ RUN mkdir /backend
 
 WORKDIR /backend
 
-RUN pip install gunicorn
 RUN pip install poetry
 
 COPY . .
